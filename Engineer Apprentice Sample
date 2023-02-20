@@ -1,0 +1,46 @@
+'''
+@Author: Heather Selleck
+'''
+
+#Import modules
+import PyPDF2 
+import textract
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from collections import Counter
+import re
+import nltk
+from nltk.collocations import *
+bigram_measures = nltk.collocations.BigramAssocMeasures()
+trigram_measures = nltk.collocations.TrigramAssocMeasures()
+import collections
+
+#Connect file
+filename = #put file link here
+pdfFileObj = open(filename,'rb')
+pdfReader = PyPDF2.PdfFileReader(pdfFileObj)
+num_pages = pdfReader.numPages
+count = 0
+text = ""
+
+#The while loop will read each page.
+while count < num_pages:
+    pageObj = pdfReader.getPage(count)
+    count +=1
+    text += pageObj.extractText()
+    
+if text != "":
+   text = text
+#If the above returns as False, we run the OCR library textract to #convert scanned/image based PDF files into text.
+else:
+   text = textract.process(fileurl, method='tesseract', language='eng')
+
+#Find common phrases repeated in document
+tokens = nltk.wordpunct_tokenize(text)
+finder = BigramCollocationFinder.from_words(tokens)
+
+#Below is how often phrase is in document (i.e 3 times)
+finder.apply_freq_filter(3)
+
+#Print how many results you'd like
+print(finder.nbest(bigram_measures.pmi, 100))
